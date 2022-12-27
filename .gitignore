@@ -1,6 +1,7 @@
 *__pycache__/
 *.idea/
 *.json
+data/*
 !*.md
 *.Rhistory
 *.DS_Store
