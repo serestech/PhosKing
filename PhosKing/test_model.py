@@ -27,11 +27,8 @@ print(f'Using python env in {sys.executable}')
 
 import torch
 print(f'Using torch version {torch.__version__}')
-from torch import nn
-import torch.utils.data as data
 from importlib import import_module
 from dataset import ESM_Embeddings_test
-import time as t
 import numpy as np
 
 # Hacky thing to import the model by storing the filename and model in strings
@@ -51,7 +48,6 @@ else:
 model = model.to(device)
 
 state_dict = torch.load(args.state_dict, map_location = device)
-print(state_dict)
 model.load_state_dict(state_dict)
 
 model.eval()
@@ -82,6 +78,7 @@ for seq_ID, seq in dataset.seq_data:
         if args.output_file:
             pass #TODO
         else:
+            # If no output file is provided, results are printed to screen
             dots = ''
             i = 0
             for pos in range(len(seq)):

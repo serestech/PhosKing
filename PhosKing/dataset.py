@@ -10,6 +10,8 @@ import torch.nn.functional as F
 import esm
 import sys
 
+
+
 PHOSPHORILABLE_AAS = {'S', 'T', 'Y'}
 
 def phosphorilable_aas(seq, interesting_aas={'S', 'T', 'Y'}):
@@ -23,6 +25,7 @@ def phosphorilable_aas(seq, interesting_aas={'S', 'T', 'Y'}):
             phosphorilable_positions.append(i + 1)  # 1-indexed positions
 
     return phosphorilable_positions
+
 
 class ESM_Embeddings(Dataset):
     '''
@@ -230,8 +233,10 @@ class ESM_Embeddings(Dataset):
             print(f'Dataset [{int((now - self.start) // 60):02d}:{(now - self.start) % 60:0>6.3f}]:', msg)
 
 
-
 class ESM_Embeddings_test:
+    '''
+    Dataset for finding phosphorylations using a previously trained model
+    '''
     def __init__(self, fasta_file, params, device, aa_window=0, two_dims=False, mode='phospho'):
         print('Reading fasta...')
         try:
@@ -240,16 +245,17 @@ class ESM_Embeddings_test:
             print('Fasta file not found, aborting...')
             sys.exit(1)
         
+        # # In case we take the whole big fasta and only want a small sample for testing
         #import random
         #self.seq_data = random.sample(self.seq_data, k=50)
 
         print(f'Found {len(self.seq_data)} sequences!')
 
         print('Computing embeddings...')
-        self.compute_embeddings(params, aa_window, two_dims, device)        
+        self._compute_embeddings(params, aa_window, two_dims, device)        
 
 
-    def compute_embeddings(self, params, aa_window, two_dims, device):
+    def _compute_embeddings(self, params, aa_window, two_dims, device):
         if params == 1280:
             esm_model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
             n_layers = 33
@@ -319,12 +325,12 @@ class ESM_Embeddings_test:
                 print(f'{k} embeddings computed!', end='\r')
             
             
-
     def __getitem__(self, seq_ID):
         return self.idxs[seq_ID], self.tensors[seq_ID]
     
     def IDs(self):
         return list(self.idxs.keys())
+
 
 
 if __name__ == '__main__':
