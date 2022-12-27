@@ -51,6 +51,7 @@ else:
 model = model.to(device)
 
 state_dict = torch.load(args.state_dict, map_location = device)
+print(state_dict)
 model.load_state_dict(state_dict)
 
 model.eval()

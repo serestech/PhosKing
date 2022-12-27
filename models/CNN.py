@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-import torch.nn.functional as F
 
 class CNN(nn.Module):
     def __init__(self, num_classes: int = 1):
@@ -20,16 +19,15 @@ class CNN(nn.Module):
     def forward(self, x):
         x = self.activ_fn(self.conv1(x))
         x = self.activ_fn(self.conv2(x))
-
         x = torch.flatten(x, start_dim=1)
 
         x = self.activ_fn(self.fc1(x))
         x = self.activ_fn(self.fc2(x))
         x = self.fc3(x)
         
-        x = self.out_activation(x)
+        out = self.out_activation(x)
 
-        return x
+        return out
 
 if __name__ == '__main__':
     cnn = CNN()

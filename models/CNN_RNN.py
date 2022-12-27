@@ -45,6 +45,13 @@ class CNN_RNN_FFNN(nn.Module):
         x, _ = self.rnn(x)
         
         x = x[:, x.shape[1]//2]
-        x = self.lnn(x)
-        return x
+        out = self.lnn(x)
+        return out
         
+
+if __name__ == '__main__':
+    cnn_rnn_ffnn = CNN_RNN_FFNN(1280, 512, 1024)
+    input = torch.rand(5, 15, 1280)
+    print('Running CNN_RNN_FFNN...')
+    out = cnn_rnn_ffnn(input)
+    print(f'{out=}')
