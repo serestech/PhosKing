@@ -31,9 +31,8 @@ class ESM_Embeddings(Dataset):
     '''
     PyTorch Dataset for phosphorilations. 
     '''
-    def __init__(self, fracc_non_phospho=0.5, aa_window=0, small_data = False, flatten_window:bool=False, add_dim=False, mode='phospho', mappings_dir: str = None, verbose_init=False):
+    def __init__(self, fracc_non_phospho=0.5, aa_window=0, small_data=False, flatten_window:bool=False, add_dim=False, mode='phospho', mappings_dir:str=None, verbose_init=False):
         self.start = t.perf_counter()
-        
         self.verbose = verbose_init
         self._log('Initializing...')
         
@@ -48,18 +47,18 @@ class ESM_Embeddings(Dataset):
         
         self.aa_window = aa_window
         self.flatten_window = flatten_window
-        
         self.add_dim = add_dim
-        
-        self.pickles_dir = os.path.expanduser('~/embedding_pickles')
-        self.metadata_table = os.path.expanduser('~/DL/features_kinase.tsv')
+
+        data_dir = os.path.dirname(__file__) + '/../data'
+        self.pickles_dir = data_dir + '/embedding_pickles'
+        self.metadata_table = data_dir + '/train/features_kinase.tsv'
         
         self.embeddings_dict: dict[torch.Tensor] = {}
         self._load_pickles(small_data)
         
         self.sequence_names = list(self.embeddings_dict.keys())
-        
-        self.fasta = read_fasta(os.path.expanduser('~/DL/comb_seq_0.85.fasta'), format=dict)
+        self.fasta = read_fasta(data_dir + '/train/comb_seq_0.85.fasta', format=dict)
+
         # Keep only pickled sequences
         before = len(self.fasta)
         self.fasta = {seqname : seq for seqname, seq in self.fasta.items()
@@ -107,7 +106,7 @@ class ESM_Embeddings(Dataset):
         else:
             raise RuntimeError('Error cogiendo los tensores. Habla con Dani')  
         
-        if self.flatten_window:
+        if self.flatten_window or self.aa_window == 0:
             out_tensor = torch.flatten(out_tensor)
         
         if self.add_dim:
@@ -182,7 +181,7 @@ class ESM_Embeddings(Dataset):
                 for kinase in kinases:
                     i = self.mapping[kinase]
                     label[i] = 1
-                data_dict[aminoacid] = label       
+                data_dict[aminoacid] = label
         
         n_phosphorilations = len(data_dict)
         self._log(f'Loaded {n_phosphorilations} phosphorilations. {n_discarded_missing + n_discarded_not_phospho + n_discarded_wrong + n_unknown_kinase} dsicarded ({n_discarded_missing} not in pickles, {n_discarded_not_phospho} not in {PHOSPHORILABLE_AAS}, {n_discarded_wrong} wrongly documented{"" if self.mode == "phospho" else (", " + str(n_unknown_kinase) + " unknown kinase")})')

@@ -1,5 +1,10 @@
+# Training
+phosking/train_model.py -m models/Log.py -n Log_reg -a 1280,1 -lr 1e-4 -e 15 -es
+
+
+# Testing
 -p 320 -m models/Log.py -n Log_reg -a 320,1 -sd states_dicts/Log_reg.320.pth
--p 1280-m models/Log.py -n Log_reg -a 1280,1 -sd states_dicts/Log_reg.pth 
+-p 1280 -m models/Log.py -n Log_reg -a 1280,1 -sd states_dicts/Log_reg.pth 
 
 -p 320 -m models/Log.py -n FFNN -a 320,512,1 -sd states_dicts/FFNN.320.pth
 -p 1280 -m models/Log.py -n FFNN -a 1280,2000,1 -sd states_dicts/FFNN.pth

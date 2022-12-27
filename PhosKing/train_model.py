@@ -79,7 +79,8 @@ def perf_scores(predictions, targets):
     return accuracy, precision, sensitivity, specificity, mcc
 
 def save_model(model: nn.Module, train_acc, valid_acc, train_loss, valid_loss, test_acc=None, test_sens=None, test_prec=None, test_spec=None, test_mcc=None, final=False):
-    filename = os.path.expanduser('~/states_dicts/' + states_dict_name + ('_phos' if args.mode == 'phospho' else '_kin') + ('_final' if final else '_best'))
+    dirname = os.path.dirname(__file__) + '/../states_dicts/'
+    filename = dirname + states_dict_name + ('_phos' if args.mode == 'phospho' else '_kin') + ('_final' if final else '_best')
     
     print(f'    Saving checkpoint: {filename}<.pth,.info>')
     

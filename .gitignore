@@ -1,7 +1,7 @@
 *__pycache__/
 *.idea/
 *.json
-data/*
+data/embedding_pickles/*
 !*.md
 *.Rhistory
 *.DS_Store
