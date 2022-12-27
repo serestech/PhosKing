@@ -7,7 +7,7 @@ from sklearn import metrics
 parser = argparse.ArgumentParser(prog='ESMTest', description='Find phosphorilation predictions with PyTorch using ESM Embeddings a trained model')
 
 parser.add_argument('-i', '--input_file', action='store', dest='fasta_file', help='Fasta file with sequence to read')
-parser.add_argument('-o', '--output_file', action='store', dest='output_file', help='Output file with predictions (not implemented yet)')
+parser.add_argument('-o', '--output_file', action='store', dest='output_file', help='Output file with predictions (not implemented yet)', default='')
 parser.add_argument('-p', '--params', action='store', dest='params', help='Parameters for the ESM Embedding (available: 320, 1280)', default='1280')
 parser.add_argument('-m', '--model_file', action='store', dest='model_file', help='Model file (python file with PyTorch model)')
 parser.add_argument('-n', '--model_name', action='store', dest='model_name', help='Model name (class name in the model file)')
@@ -63,7 +63,7 @@ dataset = ESM_Embeddings_test(fasta_file=args.fasta_file,
                               mode=args.mode
 )
 
-print_seqs = True
+
 predictions = dict()
 for seq_ID, seq in dataset.seq_data:
     if seq_ID in dataset.IDs():
@@ -78,7 +78,9 @@ for seq_ID, seq in dataset.seq_data:
         for i,pos in enumerate(dataset.idxs[seq_ID]):
             predictions[seq_ID][pos] = preds[i]
 
-        if print_seqs:
+        if args.output_file:
+            pass #TODO
+        else:
             dots = ''
             i = 0
             for pos in range(len(seq)):
@@ -95,16 +97,16 @@ for seq_ID, seq in dataset.seq_data:
                 else:
                     dots += ' '
             
-            print('\n' + seq_ID + '\n')
+            print('- ' * 41 + '\n > ' + seq_ID)
 
             for i in range(len(seq)//80+1):
                 l = i*80
                 print(dots[l:l+80])
                 print(seq[l:l+80])
                 print(' '*9+'|'+'|'.join(list('{:<9}'.format(l+j*10) for j in range(1,9))))
-                print('')
 
 
+# If features file available (with true phosphorylations): compute accuracy scores
 feat_file = ''
 if feat_file:
     with open(feat_file) as feat_file:
