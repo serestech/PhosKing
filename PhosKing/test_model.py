@@ -72,7 +72,7 @@ for seq_ID, seq in dataset.seq_data:
             preds = preds.detach().cpu().numpy().flatten()
 
         predictions[seq_ID] = dict()
-        for i,pos in enumerate(dataset.idxs[seq_ID]):
+        for i,pos in enumerate(idxs):
             predictions[seq_ID][pos] = preds[i]
 
         if args.output_file:
@@ -82,12 +82,12 @@ for seq_ID, seq in dataset.seq_data:
             dots = ''
             i = 0
             for pos in range(len(seq)):
-                if pos + 1 in dataset.idxs[seq_ID]:
-                    if preds[i] > 0.95:
+                if pos + 1 in idxs:
+                    if preds[i] > 0.99:
                         dots += '*'
-                    elif preds[i] > 0.75:
+                    elif preds[i] > 0.9:
                         dots += '+'
-                    elif preds[i] > 0.5:
+                    elif preds[i] > 0.75:
                         dots += '.'
                     else:
                         dots += ' '
@@ -102,6 +102,25 @@ for seq_ID, seq in dataset.seq_data:
                 print(dots[l:l+80])
                 print(seq[l:l+80])
                 print(' '*9+'|'+'|'.join(list('{:<9}'.format(l+j*10) for j in range(1,9))))
+            
+            print('')
+            print('Pos.\tScore\tSign.\t  '*4)
+            for i,pos in enumerate(idxs):
+                if i%4 == 0:
+                    if i != 0:
+                        print('')
+                else:
+                    print('|', end=' ')
+                if preds[i] > 0.99:
+                    dot = '*'
+                elif preds[i] > 0.9:
+                    dot = '+'
+                elif preds[i] > 0.75:
+                    dot = '.'
+                else:
+                    dot = ' '
+                print(pos, round(preds[i], 3), dot ,sep='\t', end='\t')
+            print('\n')
 
 
 # If features file available (with true phosphorylations): compute accuracy scores

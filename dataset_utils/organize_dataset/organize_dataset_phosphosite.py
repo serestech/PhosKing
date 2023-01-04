@@ -1,6 +1,6 @@
 import sys, os
 sys.path.append(os.getcwd())
-from phosking.fasta_utils import read_fasta
+from phosking.dataset import read_fasta
 
 class Table:
     def __init__(self) -> None:

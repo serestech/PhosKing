@@ -2,17 +2,55 @@ import torch
 import os
 from torch.utils.data import Dataset, DataLoader
 import pickle
-from fasta_utils import *
 from random import sample
 import time as t 
 from random import shuffle
 import torch.nn.functional as F
 import esm
 import sys
+from typing import Union
 
 
+def read_fasta(file: str, format: type = list) -> Union[list[tuple], dict]:
+    '''
+    Reads a fasta file into a list of tuples ready for ESM or, optionally, a dict.
+    '''
+    with open(file, 'r') as fastafile:
+        raw_fasta = fastafile.read()
 
-PHOSPHORILABLE_AAS = {'S', 'T', 'Y'}
+    fasta_lines = raw_fasta.splitlines()
+
+    # Trim comments and empty liens at the beginning
+    for i, line in enumerate(fasta_lines):
+        if line.startswith('>'):
+            first_entry_line = i
+            break
+
+    fasta_lines = fasta_lines[first_entry_line:]
+
+    assert fasta_lines[0].startswith('>'), "Fasta file after trimming doesn't start with '>'"
+
+    fasta_list = []
+    sequence = ''
+    for i, line in enumerate(fasta_lines):
+        next_line = fasta_lines[i + 1] if i + 1 < len(fasta_lines) else None
+
+        if line.startswith('>'):
+            current_header = line[1:].strip()
+        else:
+            sequence += line
+
+        if next_line is None or next_line.startswith('>'):
+            sequence = sequence.replace('\n', '')
+            fasta_list.append((current_header, sequence))
+            current_header = ''
+            sequence = ''
+    
+    if format == list:
+        return fasta_list
+    elif format == dict:
+        return {name : sequence for name, sequence in fasta_list}
+
 
 def phosphorilable_aas(seq, interesting_aas={'S', 'T', 'Y'}):
     '''
@@ -140,6 +178,7 @@ class ESM_Embeddings(Dataset):
         
         with open(self.metadata_table, 'r') as meta_table:
             table_lines = meta_table.readlines()
+        PHOSPHORILABLE_AAS = {'S', 'T', 'Y'}
             
         data_dict = {}  # Metadata will be saved here and ocnverted to list at the very end
         n_discarded_missing = 0
