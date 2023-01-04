@@ -6,3 +6,4 @@ data/embedding_pickles/*
 *.Rhistory
 *.DS_Store
 .Rdata
+.ipynb_checkpoints/
