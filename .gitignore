@@ -7,3 +7,4 @@ data/embedding_pickles/*
 *.DS_Store
 .Rdata
 .ipynb_checkpoints/
+*kinase_model.pth

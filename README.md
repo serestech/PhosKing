@@ -1,5 +1,5 @@
 # PhosKing
-# Group 112 project for 02456 Deep learning
+## Group 112 project for 02456 Deep learning
 
 PhosKing is a predictor of protein phosphorylation that uses ESM-2 embeddings as the basis for the prediction. [ESM-2](https://github.com/facebookresearch/esm) is a large protein language model released in August 2022 by Meta's AI research division, and pretrained weights are available for download.
 
